@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBOpenHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "notes.db";
+    private static final String DATABASE_NAME = "todo.db";
     private static final int DATABASE_VERSION = 1;
 
     //SQL to create table
