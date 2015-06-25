@@ -34,7 +34,16 @@ public class TodoProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        return null;
+        final int match = sUriMatcher.match(uri);
+
+        switch (match) {
+            case TODO:
+                return TodoContract.TodoEntry.CONTENT_TYPE;
+            case TODO_WITH_ID:
+                return TodoContract.TodoEntry.CONTENT_ITEM_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
     }
 
     @Override
