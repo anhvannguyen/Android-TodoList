@@ -29,6 +29,10 @@ public class TodoContract {
 
         public static final String COLUMN_CREATED = "date_created";
 
+        public static final String getTodoId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
         public static Uri buildTodoUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
