@@ -96,18 +96,69 @@ public class TodoProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
 
         }
-        
+
         getContext().getContentResolver().notifyChange(uri, null);
         return returnUri;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        final int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int rowsDeleted;
+
+        // this makes delete all rows return the number of rows deleted
+        if ( null == selection ) selection = "1";
+
+        switch (match) {
+            case TODO: {
+                rowsDeleted = db.delete(
+                        TodoContract.TodoEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs
+                );
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+
+        }
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        final int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int rowsUpdated;
+
+        switch (match) {
+            case TODO: {
+                rowsUpdated = db.update(
+                        TodoContract.TodoEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs
+                );
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+
+        }
+        if (rowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsUpdated;
+    }
+
+    @Override
+    public void shutdown() {
+        mOpenHelper.close();
+        super.shutdown();
     }
 }
