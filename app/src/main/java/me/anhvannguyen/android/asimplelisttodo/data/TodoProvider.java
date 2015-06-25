@@ -28,6 +28,7 @@ public class TodoProvider extends ContentProvider {
 
         matcher.addURI(authority, TodoContract.PATH_TODO, TODO);
         matcher.addURI(authority, TodoContract.PATH_TODO + "/#", TODO_WITH_ID);
+
         return matcher;
     }
 
@@ -73,7 +74,31 @@ public class TodoProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        final int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        Uri returnUri;
+
+        switch (match) {
+            case TODO: {
+                long _id = db.insert(
+                        TodoContract.TodoEntry.TABLE_NAME,
+                        null,
+                        values
+                );
+                if (_id > 0) {
+                    returnUri = TodoContract.TodoEntry.buildTodoUri(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+
+        }
+        
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
     }
 
     @Override
