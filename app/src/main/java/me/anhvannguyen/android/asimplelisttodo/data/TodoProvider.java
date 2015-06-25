@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 
@@ -18,7 +19,7 @@ public class TodoProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         mOpenHelper = new DBOpenHelper(getContext());
-        return false;
+        return true;
     }
 
     private static UriMatcher buildUriMatcher() {
@@ -31,13 +32,43 @@ public class TodoProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public String getType(Uri uri) {
         return null;
     }
 
     @Override
-    public String getType(Uri uri) {
-        return null;
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        final int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        Cursor retCursor;
+        switch (match) {
+            case TODO:
+                retCursor = db.query(
+                        TodoContract.TodoEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case TODO_WITH_ID:
+                String todoId = TodoContract.TodoEntry.getTodoId(uri);
+                retCursor = db.query(
+                        TodoContract.TodoEntry.TABLE_NAME,
+                        projection,
+                        TodoContract.TodoEntry._ID + " = ?",
+                        new String[]{todoId},
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        return retCursor;
     }
 
     @Override
