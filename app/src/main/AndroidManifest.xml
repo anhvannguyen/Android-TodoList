@@ -16,6 +16,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="me.anhvannguyen.android.asimplelisttodo"
+            android:name=".data.TodoProvider" />
     </application>
 
 </manifest>
