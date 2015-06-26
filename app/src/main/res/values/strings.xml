@@ -5,4 +5,6 @@
     <string name="all_deleted">All items deleted</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="add_item_label">Add Item</string>
+    <string name="title_activity_editor">EditorActivity</string>
+    <string name="delete_item_label">Delete Item</string>
 </resources>

@@ -3,6 +3,7 @@ package me.anhvannguyen.android.asimplelisttodo;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
     private static final int LIST_TODO_LOADER = 0;
+    private static final int EDITOR_REQUEST_CODE = 100;
 
     private ListView mTodoListView;
     private TodoCursorAdapter mCursorAdapter;
@@ -72,6 +74,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         switch (id) {
             case R.id.action_create_item:
+                openEditor();
                 break;
             case R.id.action_create_sample:
                 generateTodoSample();
@@ -81,6 +84,11 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openEditor() {
+        Intent intent = new Intent(getActivity(), EditorActivity.class);
+        startActivityForResult(intent, EDITOR_REQUEST_CODE);
     }
 
     private void deleteAllTodo() {

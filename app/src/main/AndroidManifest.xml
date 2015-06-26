@@ -16,9 +16,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
-            android:authorities="me.anhvannguyen.android.asimplelisttodo"
-            android:name=".data.TodoProvider" />
+            android:name=".data.TodoProvider"
+            android:authorities="me.anhvannguyen.android.asimplelisttodo" />
+
+        <activity
+            android:name=".EditorActivity"
+            android:label="@string/title_activity_editor"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="me.anhvannguyen.android.asimplelisttodo.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
