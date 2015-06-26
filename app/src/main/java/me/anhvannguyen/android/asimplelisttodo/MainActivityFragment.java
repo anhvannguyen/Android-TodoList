@@ -1,6 +1,8 @@
 package me.anhvannguyen.android.asimplelisttodo;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,7 +42,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().restartLoader(LIST_TODO_LOADER, null, this);
+        restartLoader();
     }
 
     @Override
@@ -69,9 +71,52 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         int id = item.getItemId();
 
         switch (id) {
-
+            case R.id.action_create_sample:
+                generateTodoSample();
+                break;
+            case R.id.action_delete_all:
+                deleteAllTodo();
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteAllTodo() {
+        DialogInterface.OnClickListener dialogClickListener =
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int button) {
+                        if (button == DialogInterface.BUTTON_POSITIVE) {
+                            // Delete all items
+                            getActivity().getContentResolver().delete(
+                                    TodoContract.TodoEntry.CONTENT_URI,
+                                    null,
+                                    null
+                            );
+                            restartLoader();
+                            Toast.makeText(getActivity(),
+                                    getString(R.string.all_deleted),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(getString(R.string.are_you_sure))
+                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
+                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
+                .show();
+    }
+
+    private void generateTodoSample() {
+        insertTodo("Something something");
+        insertTodo("Another junk \nbelow");
+        insertTodo("Something something blah blah junk junk, todo do do do do lalalalalalala");
+        restartLoader();
+    }
+
+    private void restartLoader() {
+        getLoaderManager().restartLoader(LIST_TODO_LOADER, null, this);
     }
 
     // TODO: Move off of UI thread
@@ -83,7 +128,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 TodoContract.TodoEntry.CONTENT_URI,
                 newValue
         );
-        Toast.makeText(getActivity(), "Inserting to " + insertUri.getLastPathSegment(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
