@@ -128,6 +128,15 @@ public class TodoProvider extends ContentProvider {
                 );
                 break;
             }
+            case TODO_WITH_ID: {
+                String todoId = TodoContract.TodoEntry.getTodoId(uri);
+                rowsDeleted = db.delete(
+                        TodoContract.TodoEntry.TABLE_NAME,
+                        TodoContract.TodoEntry._ID + " = ?",
+                        new String[]{todoId}
+                );
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
 
@@ -151,6 +160,16 @@ public class TodoProvider extends ContentProvider {
                         values,
                         selection,
                         selectionArgs
+                );
+                break;
+            }
+            case TODO_WITH_ID: {
+                String todoId = TodoContract.TodoEntry.getTodoId(uri);
+                rowsUpdated = db.update(
+                        TodoContract.TodoEntry.TABLE_NAME,
+                        values,
+                        TodoContract.TodoEntry._ID + " = ?",
+                        new String[]{todoId}
                 );
                 break;
             }
