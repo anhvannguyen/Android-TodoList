@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -60,6 +61,16 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         );
         mTodoListView = (ListView) rootView.findViewById(R.id.todo_listview);
         mTodoListView.setAdapter(mCursorAdapter);
+        mTodoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), EditorActivity.class);
+                Uri uri = TodoContract.TodoEntry.buildTodoUri(id);
+                intent.putExtra(EditorActivityFragment.TODO_ITEM, uri);
+                startActivityForResult(intent, EDITOR_REQUEST_CODE);
+
+            }
+        });
 
         return rootView;
     }
