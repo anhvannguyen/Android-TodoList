@@ -35,6 +35,10 @@ public class TodoCursorAdapter extends CursorAdapter {
 
         int todoIndex = cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_TEXT);
         String todoItem = cursor.getString(todoIndex);
+        int newLinePos = todoItem.indexOf("\n");
+        if (newLinePos != -1) {
+            todoItem = todoItem.substring(0, newLinePos-1) + "...";
+        }
         viewHolder.mTodoItemTextView.setText(todoItem);
 
     }
