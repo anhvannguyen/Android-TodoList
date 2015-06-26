@@ -37,7 +37,7 @@ public class TodoCursorAdapter extends CursorAdapter {
         String todoItem = cursor.getString(todoIndex);
         int newLinePos = todoItem.indexOf("\n");
         if (newLinePos != -1) {
-            todoItem = todoItem.substring(0, newLinePos-1) + "...";
+            todoItem = todoItem.substring(0, newLinePos) + "...";
         }
         viewHolder.mTodoItemTextView.setText(todoItem);
 
