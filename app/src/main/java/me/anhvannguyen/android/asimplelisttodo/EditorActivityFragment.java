@@ -21,9 +21,6 @@ import android.widget.EditText;
 import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
 
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class EditorActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = EditorActivityFragment.class.getSimpleName();
     public static final String TODO_ITEM = "todo_item";

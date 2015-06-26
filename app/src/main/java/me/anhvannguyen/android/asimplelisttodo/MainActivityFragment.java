@@ -2,7 +2,6 @@ package me.anhvannguyen.android.asimplelisttodo;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -88,9 +87,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             case R.id.action_create_item:
                 openEditor();
                 break;
-            case R.id.action_create_sample:
-                generateTodoSample();
-                break;
+//            case R.id.action_create_sample:
+//                generateTodoSample();
+//                break;
             case R.id.action_delete_all:
                 deleteAllTodo();
                 break;
@@ -130,26 +129,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 .show();
     }
 
-    private void generateTodoSample() {
-        insertTodo("Something something");
-        insertTodo("Another junk \nbelow");
-        insertTodo("Something something blah blah junk junk, todo do do do do lalalalalalala");
-        restartLoader();
-    }
+//    private void generateTodoSample() {
+//        insertTodo("Something something");
+//        insertTodo("Another junk \nbelow");
+//        insertTodo("Something something blah blah junk junk, stuff do do do do lalalalalalala");
+//        restartLoader();
+//    }
 
     private void restartLoader() {
         getLoaderManager().restartLoader(LIST_TODO_LOADER, null, this);
-    }
-
-    // TODO: Move off of UI thread
-    public void insertTodo(String todoText) {
-        ContentValues newValue = new ContentValues();
-
-        newValue.put(TodoContract.TodoEntry.COLUMN_TEXT, todoText);
-        Uri insertUri = getActivity().getContentResolver().insert(
-                TodoContract.TodoEntry.CONTENT_URI,
-                newValue
-        );
     }
 
     @Override

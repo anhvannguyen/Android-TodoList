@@ -10,9 +10,6 @@ import android.widget.TextView;
 
 import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
 
-/**
- * Created by anhvannguyen on 6/25/15.
- */
 public class TodoCursorAdapter extends CursorAdapter {
 
     public TodoCursorAdapter(Context context, Cursor c, int flags) {
