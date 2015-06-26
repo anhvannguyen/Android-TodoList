@@ -1,5 +1,6 @@
 package me.anhvannguyen.android.asimplelisttodo;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -138,6 +139,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 TodoContract.TodoEntry.CONTENT_URI,
                 newValue
         );
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == EDITOR_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            restartLoader();
+        }
     }
 
     @Override

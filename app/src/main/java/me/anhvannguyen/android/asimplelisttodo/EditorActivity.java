@@ -1,7 +1,7 @@
 package me.anhvannguyen.android.asimplelisttodo;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -32,5 +32,13 @@ public class EditorActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        EditorActivityFragment fragment = (EditorActivityFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.editor_fragment);
+        fragment.onBackPressed();
     }
 }
