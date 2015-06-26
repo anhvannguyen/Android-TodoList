@@ -3,9 +3,13 @@ package me.anhvannguyen.android.asimplelisttodo;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,11 +24,15 @@ import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class EditorActivityFragment extends Fragment {
+public class EditorActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String LOG_TAG = EditorActivityFragment.class.getSimpleName();
     public static final String TODO_ITEM = "todo_item";
+    private static final int TODO_EDIT_LOADER = 0;
 
     private String mActionString;
+    private String mOldString;
     private EditText mEditorEditText;
+    private Uri mUri;
 
     public EditorActivityFragment() {
         setHasOptionsMenu(true);
@@ -32,7 +40,10 @@ public class EditorActivityFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_editor_fragment, menu);
+
+        if (mActionString.equals(Intent.ACTION_EDIT)) {
+            inflater.inflate(R.menu.menu_editor_fragment, menu);
+        }
     }
 
     @Override
@@ -41,6 +52,7 @@ public class EditorActivityFragment extends Fragment {
 
         switch (id) {
             case R.id.action_delete_item:
+                deleteTodo();
                 break;
             case android.R.id.home:
                 finishEdit();
@@ -57,14 +69,23 @@ public class EditorActivityFragment extends Fragment {
         mEditorEditText = (EditText) rootView.findViewById(R.id.todo_item_edittext);
         Intent intent = getActivity().getIntent();
 
-        Uri uri = intent.getParcelableExtra(TODO_ITEM);
+        mUri = intent.getParcelableExtra(TODO_ITEM);
 
-        if (uri == null) {
+        if (mUri == null) {
             mActionString = Intent.ACTION_INSERT;
             getActivity().setTitle(getString(R.string.new_item_title));
+            mOldString = null;
+        } else {
+            mActionString = Intent.ACTION_EDIT;
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        getLoaderManager().initLoader(TODO_EDIT_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
     }
 
     private void finishEdit() {
@@ -78,8 +99,42 @@ public class EditorActivityFragment extends Fragment {
                     insertItem(newText);
                 }
                 break;
+            case Intent.ACTION_EDIT:
+                if (newText.length() == 0) {
+                    deleteTodo();
+                } else if (mOldString.equals(newText)) {
+                    getActivity().setResult(Activity.RESULT_CANCELED);
+                } else {
+                    updateTodo(newText);
+                }
+                break;
 
         }
+        getActivity().finish();
+    }
+
+    private void updateTodo(String newText) {
+        if (mUri == null) {
+            return;
+        }
+        ContentValues newValue = new ContentValues();
+        newValue.put(TodoContract.TodoEntry.COLUMN_TEXT, newText);
+
+        getActivity().getContentResolver().update(
+                mUri,
+                newValue,
+                null,
+                null
+        );
+    }
+
+    private void deleteTodo() {
+        getActivity().getContentResolver().delete(
+                mUri,
+                null,
+                null
+        );
+        getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
     }
 
@@ -96,5 +151,35 @@ public class EditorActivityFragment extends Fragment {
 
     public void onBackPressed() {
         finishEdit();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if (mUri != null) {
+            return new CursorLoader(
+                    getActivity(),
+                    mUri,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null && data.moveToFirst()) {
+
+            int textIndex = data.getColumnIndex(TodoContract.TodoEntry.COLUMN_TEXT);
+            mOldString = data.getString(textIndex);
+            mEditorEditText.setText(mOldString);
+            mEditorEditText.requestFocus();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
     }
 }
