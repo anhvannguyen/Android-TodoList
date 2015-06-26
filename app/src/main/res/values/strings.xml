@@ -2,4 +2,6 @@
     <string name="app_name">ASimpleList Todo</string>
     <string name="generate_sample_label">Generate Sample</string>
     <string name="delete_list_label">Delete List</string>
+    <string name="all_deleted">All items deleted</string>
+    <string name="are_you_sure">Are you sure?</string>
 </resources>
