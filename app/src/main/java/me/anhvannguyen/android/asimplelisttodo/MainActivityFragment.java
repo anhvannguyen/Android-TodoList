@@ -9,6 +9,9 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -17,9 +20,6 @@ import android.widget.Toast;
 import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
 
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
     private static final int LIST_TODO_LOADER = 0;
@@ -28,6 +28,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private TodoCursorAdapter mCursorAdapter;
 
     public MainActivityFragment() {
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -56,6 +57,21 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         mTodoListView.setAdapter(mCursorAdapter);
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // TODO: Move off of UI thread
