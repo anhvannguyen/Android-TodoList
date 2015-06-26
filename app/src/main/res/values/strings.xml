@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">ASimpleList Todo</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="generate_sample_label">Generate Sample</string>
+    <string name="delete_list_label">Delete List</string>
 </resources>
