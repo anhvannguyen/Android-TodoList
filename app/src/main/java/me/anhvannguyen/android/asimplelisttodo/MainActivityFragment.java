@@ -71,6 +71,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.action_create_item:
+                break;
             case R.id.action_create_sample:
                 generateTodoSample();
                 break;

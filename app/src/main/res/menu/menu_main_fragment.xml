@@ -3,6 +3,11 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools">
     <item
+        android:id="@+id/action_create_item"
+        android:title="@string/add_item_label"
+        android:icon="@drawable/ic_action_add"
+        app:showAsAction="always"/>
+    <item
         android:id="@+id/action_create_sample"
         android:orderInCategory="100"
         android:title="@string/generate_sample_label"

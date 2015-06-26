@@ -4,4 +4,5 @@
     <string name="delete_list_label">Delete List</string>
     <string name="all_deleted">All items deleted</string>
     <string name="are_you_sure">Are you sure?</string>
+    <string name="add_item_label">Add Item</string>
 </resources>
