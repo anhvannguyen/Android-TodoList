@@ -5,20 +5,19 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
@@ -29,8 +28,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private static final int LIST_TODO_LOADER = 0;
     private static final int EDITOR_REQUEST_CODE = 100;
 
-    private ListView mTodoListView;
-    private TodoCursorAdapter mCursorAdapter;
+//    private ListView mTodoListView;
+    private RecyclerView mTodoRecyclerView;
+//    private TodoCursorAdapter mCursorAdapter;
+    private TodoRecycleAdapter mRecycleAdapter;
 
     public MainActivityFragment() {
         setHasOptionsMenu(true);
@@ -53,23 +54,29 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mCursorAdapter = new TodoCursorAdapter(
-                getActivity(),
-                null,
-                0
-        );
-        mTodoListView = (ListView) rootView.findViewById(R.id.todo_listview);
-        mTodoListView.setAdapter(mCursorAdapter);
-        mTodoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), EditorActivity.class);
-                Uri uri = TodoContract.TodoEntry.buildTodoUri(id);
-                intent.putExtra(EditorActivityFragment.TODO_ITEM, uri);
-                startActivityForResult(intent, EDITOR_REQUEST_CODE);
+//        mCursorAdapter = new TodoCursorAdapter(
+//                getActivity(),
+//                null,
+//                0
+//        );
+        mRecycleAdapter = new TodoRecycleAdapter(getActivity());
 
-            }
-        });
+//        mTodoListView = (ListView) rootView.findViewById(R.id.todo_listview);
+//        mTodoListView.setAdapter(mCursorAdapter);
+//        mTodoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(getActivity(), EditorActivity.class);
+//                Uri uri = TodoContract.TodoEntry.buildTodoUri(id);
+//                intent.putExtra(EditorActivityFragment.TODO_ITEM, uri);
+//                startActivityForResult(intent, EDITOR_REQUEST_CODE);
+//
+//            }
+//        });
+
+        mTodoRecyclerView = (RecyclerView) rootView.findViewById(R.id.todo_recycleview);
+        mTodoRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mTodoRecyclerView.setAdapter(mRecycleAdapter);
 
         return rootView;
     }
@@ -162,11 +169,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursorAdapter.swapCursor(data);
+//        mCursorAdapter.swapCursor(data);
+        mRecycleAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mCursorAdapter.swapCursor(null);
+//        mCursorAdapter.swapCursor(null);
+        mRecycleAdapter.swapCursor(null);
     }
 }
