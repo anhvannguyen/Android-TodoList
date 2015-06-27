@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -59,7 +60,19 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //                null,
 //                0
 //        );
-        mRecycleAdapter = new TodoRecycleAdapter(getActivity());
+        mRecycleAdapter = new TodoRecycleAdapter(getActivity(), new TodoRecycleAdapter.TodoAdapterOnClickHandler() {
+            @Override
+            public void onClick(TodoRecycleAdapter.ViewHolder viewHolder) {
+                if (mRecycleAdapter.getCursor() != null) {
+                    int idIndex = mRecycleAdapter.getCursor().getColumnIndex(TodoContract.TodoEntry._ID);
+                    long id = mRecycleAdapter.getCursor().getLong(idIndex);
+                    Intent intent = new Intent(getActivity(), EditorActivity.class);
+                    Uri uri = TodoContract.TodoEntry.buildTodoUri(id);
+                    intent.putExtra(EditorActivityFragment.TODO_ITEM, uri);
+                    startActivityForResult(intent, EDITOR_REQUEST_CODE);
+                }
+            }
+        });
 
 //        mTodoListView = (ListView) rootView.findViewById(R.id.todo_listview);
 //        mTodoListView.setAdapter(mCursorAdapter);

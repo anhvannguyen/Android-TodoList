@@ -17,18 +17,33 @@ public class TodoRecycleAdapter extends RecyclerView.Adapter<TodoRecycleAdapter.
 
     private Cursor mCursor;
     final private Context mContext;
+    final private TodoAdapterOnClickHandler mClickHandler;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView mTodoTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mTodoTextView = (TextView) itemView.findViewById(R.id.list_item_todo_textview);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            mClickHandler.onClick(this);
         }
     }
 
-    public TodoRecycleAdapter(Context context) {
+
+    public static interface TodoAdapterOnClickHandler {
+        void onClick(ViewHolder viewHolder);
+    }
+
+    public TodoRecycleAdapter(Context context, TodoAdapterOnClickHandler clickHandler) {
         mContext = context;
+        mClickHandler = clickHandler;
     }
 
     @Override
@@ -45,7 +60,13 @@ public class TodoRecycleAdapter extends RecyclerView.Adapter<TodoRecycleAdapter.
         mCursor.moveToPosition(i);
 
         int textIndex = mCursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_TEXT);
-        viewHolder.mTodoTextView.setText(mCursor.getString(textIndex));
+        String todoTextString = mCursor.getString(textIndex);
+        int newLinePos = todoTextString.indexOf("\n");
+        if (newLinePos != -1) {
+            todoTextString = todoTextString.substring(0, newLinePos) + "...";
+        }
+
+        viewHolder.mTodoTextView.setText(todoTextString);
     }
 
     @Override
