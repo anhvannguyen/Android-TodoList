@@ -88,6 +88,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //        });
 
         mTodoRecyclerView = (RecyclerView) rootView.findViewById(R.id.todo_recycleview);
+        // improve performance if the content of the layout
+        // does not change the size of the RecyclerView
+        mTodoRecyclerView.setHasFixedSize(true);
+
         mTodoRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTodoRecyclerView.setAdapter(mRecycleAdapter);
 
