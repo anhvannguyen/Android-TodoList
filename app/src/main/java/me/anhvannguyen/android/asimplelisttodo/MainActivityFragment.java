@@ -1,8 +1,7 @@
 package me.anhvannguyen.android.asimplelisttodo;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -22,15 +21,29 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
+import me.anhvannguyen.android.asimplelisttodo.model.TodoItem;
 
 
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
     private static final int LIST_TODO_LOADER = 0;
     private static final int EDITOR_REQUEST_CODE = 100;
+
+    private static final String[] TODO_PROJECTION = {
+            TodoContract.TodoEntry._ID,
+            TodoContract.TodoEntry.COLUMN_TEXT,
+            TodoContract.TodoEntry.COLUMN_CREATED
+    };
+
+    private static final int COL_ID = 0;
+    private static final int COL_TEXT = 1;
+    private static final int COL_CREATED = 2;
+
 
 //    private ListView mTodoListView;
     private RecyclerView mTodoRecyclerView;
@@ -133,16 +146,42 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //                generateTodoSample();
 //                break;
             case R.id.action_delete_all:
+                final List<TodoItem> tempList = new ArrayList<TodoItem>();
+                mTempDataCursor = getActivity().getContentResolver().query(
+                        TodoContract.TodoEntry.CONTENT_URI,
+                        TODO_PROJECTION,
+                        null,
+                        null,
+                        null
+                );
+                while (mTempDataCursor.moveToNext()) {
+                    String todoItem = mTempDataCursor.getString(COL_TEXT);
+                    String created = mTempDataCursor.getString(COL_CREATED);
+                    tempList.add(new TodoItem(todoItem, created));
+                }
                 Snackbar.make(mCoordinatorLayout, "All items deleted", Snackbar.LENGTH_LONG)
                         .setAction("Undo", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                // Do something
+                                // User undo delete, add all items back to database
+                                // TODO: move off main thread and bulk insert
+                                for (TodoItem item : tempList) {
+                                    ContentValues tempValue = new ContentValues();
+                                    tempValue.put(TodoContract.TodoEntry.COLUMN_TEXT, item.getText());
+                                    tempValue.put(TodoContract.TodoEntry.COLUMN_CREATED, item.getCreated());
+                                    getActivity().getContentResolver().insert(
+                                            TodoContract.TodoEntry.CONTENT_URI,
+                                            tempValue
+                                    );
+                                }
+                                mTempDataCursor.close();
+                                tempList.clear();
+                                restartLoader();
                             }
                         })
                         .setActionTextColor(getResources().getColor(R.color.red))
                         .show();
-                //deleteAllTodo();
+                deleteAllTodo();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -154,30 +193,36 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     private void deleteAllTodo() {
-        DialogInterface.OnClickListener dialogClickListener =
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int button) {
-                        if (button == DialogInterface.BUTTON_POSITIVE) {
-                            // Delete all items
-                            getActivity().getContentResolver().delete(
-                                    TodoContract.TodoEntry.CONTENT_URI,
-                                    null,
-                                    null
-                            );
-                            restartLoader();
-                            Toast.makeText(getActivity(),
-                                    getString(R.string.all_deleted),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                };
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(getString(R.string.are_you_sure))
-                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
-                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
-                .show();
+//        DialogInterface.OnClickListener dialogClickListener =
+//                new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int button) {
+//                        if (button == DialogInterface.BUTTON_POSITIVE) {
+//                            // Delete all items
+//                            getActivity().getContentResolver().delete(
+//                                    TodoContract.TodoEntry.CONTENT_URI,
+//                                    null,
+//                                    null
+//                            );
+//                            restartLoader();
+//                            Toast.makeText(getActivity(),
+//                                    getString(R.string.all_deleted),
+//                                    Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                };
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setMessage(getString(R.string.are_you_sure))
+//                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
+//                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
+//                .show();
+        getActivity().getContentResolver().delete(
+                TodoContract.TodoEntry.CONTENT_URI,
+                null,
+                null
+        );
+        restartLoader();
     }
 
 //    private void generateTodoSample() {
@@ -204,7 +249,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         return new CursorLoader(
                 getActivity(),
                 TodoContract.TodoEntry.CONTENT_URI,
-                null,
+                TODO_PROJECTION,
                 null,
                 null,
                 sortOrder
@@ -215,13 +260,11 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 //        mCursorAdapter.swapCursor(data);
         mRecycleAdapter.swapCursor(data);
-        mTempDataCursor = data;
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 //        mCursorAdapter.swapCursor(null);
         mRecycleAdapter.swapCursor(null);
-        mTempDataCursor = null;
     }
 }
