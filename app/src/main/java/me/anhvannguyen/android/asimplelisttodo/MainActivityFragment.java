@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -33,6 +36,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private RecyclerView mTodoRecyclerView;
 //    private TodoCursorAdapter mCursorAdapter;
     private TodoRecycleAdapter mRecycleAdapter;
+    private FloatingActionButton mAddButton;
+    private CoordinatorLayout mCoordinatorLayout;
+
+    private Cursor mTempDataCursor;
 
     public MainActivityFragment() {
         setHasOptionsMenu(true);
@@ -60,6 +67,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //                null,
 //                0
 //        );
+        mCoordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.coordinator_layout);
+
         mRecycleAdapter = new TodoRecycleAdapter(getActivity(), new TodoRecycleAdapter.TodoAdapterOnClickHandler() {
             @Override
             public void onClick(TodoRecycleAdapter.ViewHolder viewHolder) {
@@ -87,6 +96,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //            }
 //        });
 
+        mAddButton = (FloatingActionButton) rootView.findViewById(R.id.add_fab);
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openEditor();
+            }
+        });
+
         mTodoRecyclerView = (RecyclerView) rootView.findViewById(R.id.todo_recycleview);
         // improve performance if the content of the layout
         // does not change the size of the RecyclerView
@@ -94,6 +111,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         mTodoRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTodoRecyclerView.setAdapter(mRecycleAdapter);
+
 
         return rootView;
     }
@@ -108,14 +126,23 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_create_item:
-                openEditor();
-                break;
+//            case R.id.action_create_item:
+//                openEditor();
+//                break;
 //            case R.id.action_create_sample:
 //                generateTodoSample();
 //                break;
             case R.id.action_delete_all:
-                deleteAllTodo();
+                Snackbar.make(mCoordinatorLayout, "All items deleted", Snackbar.LENGTH_LONG)
+                        .setAction("Undo", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // Do something
+                            }
+                        })
+                        .setActionTextColor(getResources().getColor(R.color.red))
+                        .show();
+                //deleteAllTodo();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -188,11 +215,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 //        mCursorAdapter.swapCursor(data);
         mRecycleAdapter.swapCursor(data);
+        mTempDataCursor = data;
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 //        mCursorAdapter.swapCursor(null);
         mRecycleAdapter.swapCursor(null);
+        mTempDataCursor = null;
     }
 }
