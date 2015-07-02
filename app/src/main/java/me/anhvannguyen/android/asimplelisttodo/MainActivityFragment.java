@@ -174,14 +174,18 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                                             tempValue
                                     );
                                 }
-                                mTempDataCursor.close();
+                                // Clean up the temp items
                                 tempList.clear();
+                                mTempDataCursor.close();
                                 restartLoader();
                             }
                         })
                         .setActionTextColor(getResources().getColor(R.color.red))
                         .show();
+                // Delete all the items
                 deleteAllTodo();
+                // Restart the loader
+                restartLoader();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -231,6 +235,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //        insertTodo("Something something blah blah junk junk, stuff do do do do lalalalalalala");
 //        restartLoader();
 //    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mTempDataCursor != null) {
+            mTempDataCursor.close();
+        }
+    }
 
     private void restartLoader() {
         getLoaderManager().restartLoader(LIST_TODO_LOADER, null, this);
