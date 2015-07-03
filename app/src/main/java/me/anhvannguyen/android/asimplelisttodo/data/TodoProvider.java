@@ -117,7 +117,7 @@ public class TodoProvider extends ContentProvider {
         int rowsDeleted;
 
         // this makes delete all rows return the number of rows deleted
-        if ( null == selection ) selection = "1";
+        if (null == selection) selection = "1";
 
         switch (match) {
             case TODO: {
@@ -182,6 +182,37 @@ public class TodoProvider extends ContentProvider {
         }
 
         return rowsUpdated;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case TODO:
+                db.beginTransaction();
+                int returnCount = 0;
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(
+                                TodoContract.TodoEntry.TABLE_NAME,
+                                null,
+                                value
+                        );
+                        if (_id > 0) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            default:
+                return super.bulkInsert(uri, values);
+
+        }
     }
 
     @Override
