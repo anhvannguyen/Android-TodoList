@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
-import me.anhvannguyen.android.asimplelisttodo.model.TodoItem;
 
 
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -146,7 +145,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //                generateTodoSample();
 //                break;
             case R.id.action_delete_all:
-                final List<TodoItem> tempList = new ArrayList<TodoItem>();
+                if (mRecycleAdapter.getItemCount() == 0) {
+                    Snackbar.make(mCoordinatorLayout, "Nothing to delete", Snackbar.LENGTH_SHORT)
+                            .show();
+                    break;
+                }
+                final List<ContentValues> tempList = new ArrayList<ContentValues>();
                 mTempDataCursor = getActivity().getContentResolver().query(
                         TodoContract.TodoEntry.CONTENT_URI,
                         TODO_PROJECTION,
@@ -157,7 +161,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 while (mTempDataCursor.moveToNext()) {
                     String todoItem = mTempDataCursor.getString(COL_TEXT);
                     String created = mTempDataCursor.getString(COL_CREATED);
-                    tempList.add(new TodoItem(todoItem, created));
+                    ContentValues value = new ContentValues();
+                    value.put(TodoContract.TodoEntry.COLUMN_TEXT, todoItem);
+                    value.put(TodoContract.TodoEntry.COLUMN_CREATED, created);
+                    tempList.add(value);
                 }
                 Snackbar.make(mCoordinatorLayout, "All items deleted", Snackbar.LENGTH_LONG)
                         .setAction("Undo", new View.OnClickListener() {
@@ -165,15 +172,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                             public void onClick(View v) {
                                 // User undo delete, add all items back to database
                                 // TODO: move off main thread and bulk insert
-                                for (TodoItem item : tempList) {
-                                    ContentValues tempValue = new ContentValues();
-                                    tempValue.put(TodoContract.TodoEntry.COLUMN_TEXT, item.getText());
-                                    tempValue.put(TodoContract.TodoEntry.COLUMN_CREATED, item.getCreated());
-                                    getActivity().getContentResolver().insert(
-                                            TodoContract.TodoEntry.CONTENT_URI,
-                                            tempValue
-                                    );
-                                }
+                                ContentValues[] values = new ContentValues[tempList.size()];
+                                tempList.toArray(values);
+                                getActivity().getContentResolver().bulkInsert(
+                                        TodoContract.TodoEntry.CONTENT_URI,
+                                        values
+                                );
                                 // Clean up the temp items
                                 tempList.clear();
                                 mTempDataCursor.close();
