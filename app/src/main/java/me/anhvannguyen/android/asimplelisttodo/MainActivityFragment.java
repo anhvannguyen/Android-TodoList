@@ -171,7 +171,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                             @Override
                             public void onClick(View v) {
                                 // User undo delete, add all items back to database
-                                // TODO: move off main thread and bulk insert
                                 ContentValues[] values = new ContentValues[tempList.size()];
                                 tempList.toArray(values);
                                 getActivity().getContentResolver().bulkInsert(
@@ -201,30 +200,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     private void deleteAllTodo() {
-//        DialogInterface.OnClickListener dialogClickListener =
-//                new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int button) {
-//                        if (button == DialogInterface.BUTTON_POSITIVE) {
-//                            // Delete all items
-//                            getActivity().getContentResolver().delete(
-//                                    TodoContract.TodoEntry.CONTENT_URI,
-//                                    null,
-//                                    null
-//                            );
-//                            restartLoader();
-//                            Toast.makeText(getActivity(),
-//                                    getString(R.string.all_deleted),
-//                                    Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                };
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setMessage(getString(R.string.are_you_sure))
-//                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
-//                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
-//                .show();
         getActivity().getContentResolver().delete(
                 TodoContract.TodoEntry.CONTENT_URI,
                 null,
