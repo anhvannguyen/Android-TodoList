@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
+import me.anhvannguyen.android.asimplelisttodo.data.TodoQueryHandler;
 
 
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -52,6 +53,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private CoordinatorLayout mCoordinatorLayout;
 
     private Cursor mTempDataCursor;
+    private TodoQueryHandler mQueryHandler;
 
     public MainActivityFragment() {
         setHasOptionsMenu(true);
@@ -124,6 +126,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         mTodoRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTodoRecyclerView.setAdapter(mRecycleAdapter);
 
+        mQueryHandler = new TodoQueryHandler(getActivity().getContentResolver());
 
         return rootView;
     }
@@ -200,7 +203,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     private void deleteAllTodo() {
-        getActivity().getContentResolver().delete(
+        mQueryHandler.startDelete(
+                -1,
+                null,
                 TodoContract.TodoEntry.CONTENT_URI,
                 null,
                 null

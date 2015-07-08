@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import me.anhvannguyen.android.asimplelisttodo.data.TodoContract;
+import me.anhvannguyen.android.asimplelisttodo.data.TodoQueryHandler;
 
 
 public class EditorActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -30,6 +31,7 @@ public class EditorActivityFragment extends Fragment implements LoaderManager.Lo
     private String mOldString;
     private EditText mEditorEditText;
     private Uri mUri;
+    private TodoQueryHandler mQueryHandler;
 
     public EditorActivityFragment() {
         setHasOptionsMenu(true);
@@ -76,6 +78,7 @@ public class EditorActivityFragment extends Fragment implements LoaderManager.Lo
             mActionString = Intent.ACTION_EDIT;
         }
 
+        mQueryHandler = new TodoQueryHandler(getActivity().getContentResolver());
         return rootView;
     }
 
@@ -116,21 +119,35 @@ public class EditorActivityFragment extends Fragment implements LoaderManager.Lo
         }
         ContentValues newValue = new ContentValues();
         newValue.put(TodoContract.TodoEntry.COLUMN_TEXT, newText);
-
-        getActivity().getContentResolver().update(
+        mQueryHandler.startUpdate(
+                -1,
+                null,
                 mUri,
                 newValue,
                 null,
                 null
         );
+//        getActivity().getContentResolver().update(
+//                mUri,
+//                newValue,
+//                null,
+//                null
+//        );
     }
 
     private void deleteTodo() {
-        getActivity().getContentResolver().delete(
+        mQueryHandler.startDelete(
+                -1,
+                null,
                 mUri,
                 null,
                 null
         );
+//        getActivity().getContentResolver().delete(
+//                mUri,
+//                null,
+//                null
+//        );
         getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
     }
@@ -139,10 +156,15 @@ public class EditorActivityFragment extends Fragment implements LoaderManager.Lo
         ContentValues newValue = new ContentValues();
 
         newValue.put(TodoContract.TodoEntry.COLUMN_TEXT, todoText);
-        getActivity().getContentResolver().insert(
+        mQueryHandler.startInsert(
+                -1,
+                null,
                 TodoContract.TodoEntry.CONTENT_URI,
-                newValue
-        );
+                newValue);
+//        getActivity().getContentResolver().insert(
+//                TodoContract.TodoEntry.CONTENT_URI,
+//                newValue
+//        );
         getActivity().setResult(Activity.RESULT_OK);
     }
 
