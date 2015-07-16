@@ -13,11 +13,12 @@ A simple and basic todo list for Android.
 - TextInputLayout is used for floating labels
 - Snackbar replaced the Toast and AlertDialog
 
-### Main Screen<br>
+####Sample Screenshot
+###### Main Screen<br>
 <img src="https://github.com/anhvannguyen/Android-TodoList/blob/master/images/Todo_List_01.png" width="270" height="480" /><br>
 
-### Snackbar<br>
+###### Snackbar<br>
 <img src="https://github.com/anhvannguyen/Android-TodoList/blob/master/images/Todo_List_02.png" width="270" height="480" /><br>
 
-### New/Edit Screen<br>
+###### New/Edit Screen<br>
 <img src="https://github.com/anhvannguyen/Android-TodoList/blob/master/images/Todo_List_03.png" width="270" height="480" />
